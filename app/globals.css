@@ -1,0 +1,68 @@
+@import "tailwindcss";
+body {
+  background: linear-gradient(135deg, #121212, #1e1e3f);
+  color: white;
+}
+/* /////////////calendar  */
+.color-empty {
+  fill: #eeeeee;
+}
+
+.color-scale-1 {
+  fill: #c6e48b;
+}
+
+.color-scale-2 {
+  fill: #7bc96f;
+}
+
+.color-scale-3 {
+  fill: #239a3b;
+}
+
+.color-scale-4 {
+  fill: #196127;
+}
+
+.visible-start {
+  opacity: 1 !important;
+}
+
+/* FONDO LANDING  */
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animated-gradient {
+  background: linear-gradient(-45deg, #4f46e5, #9333ea, #ec4899, #f59e0b);
+  background-size: 400% 400%;
+  animation: gradientMove 15s ease infinite;
+}
+
+///////////button invitame un coffe
+@keyframes pulseGlow {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+}
+
+.animate-pulseGlow {
+  animation: pulseGlow 2s infinite ease-in-out;
+}
