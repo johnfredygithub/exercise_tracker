@@ -7,7 +7,9 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 //import type { PrismaClient as StandardPrismaClient } from "../../../../generated/prisma";
-import { PrismaClient } from "../../../../generated/prisma";
+///import { PrismaClient } from "../../../../generated/prisma";
+
+import { PrismaClient } from "@prisma/client";
 
 import { signInEmailPassword } from "./actions/auth-actions";
 
