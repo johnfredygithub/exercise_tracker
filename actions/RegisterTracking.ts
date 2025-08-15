@@ -1,8 +1,8 @@
 "use server";
 
 import prisma from "../lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../app/api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/auth.config";
 import { revalidatePath } from "next/cache";
 
 interface TrakingInterface {

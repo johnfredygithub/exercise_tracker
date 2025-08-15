@@ -2,8 +2,9 @@ import "./globals.css";
 import { FloatingDockDemo } from "../components/FloatingDockDemo";
 
 import Providers from "./providers";
-import { getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]/route";
+
+import { authOptions } from "@/auth.config";
+import { getServerSession } from "next-auth/next";
 
 export const metadata = {
   title: "ExerciseTrackerFree",

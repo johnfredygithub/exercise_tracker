@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+
     "target": "ESNext",
     "lib": [
       "dom",
@@ -23,13 +24,18 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    }
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     "next-env.d.ts",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "nextauth.d.ts"
   ],
   "exclude": [
     "node_modules"
