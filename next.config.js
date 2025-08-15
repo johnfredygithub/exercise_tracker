@@ -1,4 +1,7 @@
 const nextConfig = {
+  experimental: {
+    serverComponentsExternalPackages: ["@prisma/client", "prisma"],
+  },
   reactStrictMode: true,
   //  swcMinify: true
   images: {
