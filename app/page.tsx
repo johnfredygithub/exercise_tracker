@@ -49,7 +49,7 @@ export default function LandingPage() {
         ref={heroRef}
         className="flex flex-col items-center justify-center text-center py-24 px-6"
       >
-        <h1 className="text-5xl sm:text-6xl font-extrabold drop-shadow-lg">
+        <h1 className="text-4xl sm:text-6xl font-extrabold drop-shadow-lg">
           ExerciseTrackerFree
         </h1>
         <p className="mt-4 max-w-xl text-lg text-white/90">
