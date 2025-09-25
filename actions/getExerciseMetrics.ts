@@ -26,11 +26,13 @@ export async function getExerciseMetrics() {
     const userId = await getUserId();
     const data = await prisma.exerciseTracking.findMany({
       where: { userId },
-      orderBy: { date: "asc" },
+      orderBy: { date: "desc" },
       select: {
+        id: true,
         date: true,
         repetitions: true,
         exerciseName: true,
+        notes: true,
       },
     });
 
@@ -43,6 +45,8 @@ export async function getExerciseMetrics() {
             date: day,
             count: 0,
             exercises: [],
+            notes: curr.notes || "",
+            id: curr.id,
           };
         }
         acc[day].count += curr.repetitions;
@@ -50,7 +54,7 @@ export async function getExerciseMetrics() {
           `${curr.exerciseName} (${curr.repetitions} reps)`
         );
         return acc;
-      }, {} as Record<string, { date: string; count: number; exercises: string[] }>)
+      }, {} as Record<string, { date: string; count: number; exercises: string[]; notes: string; id: string }>)
     );
 
     return grouped;

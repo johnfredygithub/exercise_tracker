@@ -13,9 +13,11 @@ import {
 } from "../actions/getExerciseMetrics";
 import { motion } from "framer-motion";
 import gsap from "gsap";
+import { SiVictoriametrics } from "react-icons/si";
 
 // Iconos
 import { FiActivity, FiTrendingUp, FiCalendar, FiRepeat } from "react-icons/fi";
+import Link from "next/link";
 
 export default function Metricas() {
   const [metrics, setMetrics] = useState<any>(null);
@@ -182,6 +184,25 @@ export default function Metricas() {
             {metrics?.comparison?.weekChange ?? 0}%
           </p>
         </motion.div>
+
+        <Link href={"MetricasTable"}>
+          <motion.div
+            ref={(el) => {
+              if (el) cardsRef.current.push(el);
+            }}
+            whileHover={{ scale: 1.05 }}
+            className="bg-purple-500 text-white rounded-xl p-5 shadow-lg flex flex-col items-center"
+          >
+            <div
+              ref={(el) => {
+                if (el) cardsRef.current.push(el);
+              }}
+            >
+              <SiVictoriametrics className="text-4xl mb-2" />
+            </div>
+            <p className="text-2xl font-bold">TABLA</p>
+          </motion.div>
+        </Link>
       </div>
     </div>
   );
