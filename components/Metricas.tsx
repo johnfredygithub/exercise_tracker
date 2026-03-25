@@ -74,8 +74,8 @@ export default function Metricas() {
       {/* Heatmap */}
       <div className="overflow-x-auto p-4 bg-white/20 backdrop-blur-sm rounded-xl shadow-inner">
         <CalendarHeatmap
-          startDate={new Date("2025-01-01")}
-          endDate={new Date("2025-12-31")}
+          startDate={new Date(new Date().getFullYear(), 0, 1)}
+          endDate={new Date(new Date().getFullYear(), 11, 31)}
           values={metricsCalendar}
           classForValue={(value) => {
             if (!value || value.count === 0) return "color-empty";
