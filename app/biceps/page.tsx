@@ -25,6 +25,30 @@ export default function Biceps() {
 
   const { handleSave } = useExerciseTracker();
 
+  // Función para reproducir un sonido de beep
+  const playBeep = () => {
+    const audioContext = new (
+      window.AudioContext || (window as any).webkitAudioContext
+    )();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime); // Frecuencia del beep
+    oscillator.type = "sine";
+
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(
+      0.01,
+      audioContext.currentTime + 0.3,
+    );
+
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.3);
+  };
+
   useEffect(() => {
     if (repCount > 0) {
       handleSave({
@@ -82,7 +106,7 @@ export default function Biceps() {
       poses.forEach((pose, idx) => {
         console.log(
           `Pose #${idx + 1}`,
-          pose.keypoints.map((k) => `${k.name}:${k.score?.toFixed(2)}`)
+          pose.keypoints.map((k) => `${k.name}:${k.score?.toFixed(2)}`),
         );
         detectBenchDip(pose, ctx);
 
@@ -128,7 +152,7 @@ export default function Biceps() {
     const leftWrist = pose.keypoints.find((k) => k.name === "left_wrist");
 
     const rightShoulder = pose.keypoints.find(
-      (k) => k.name === "right_shoulder"
+      (k) => k.name === "right_shoulder",
     );
     const rightElbow = pose.keypoints.find((k) => k.name === "right_elbow");
     const rightWrist = pose.keypoints.find((k) => k.name === "right_wrist");
@@ -201,6 +225,7 @@ export default function Biceps() {
       isDownRef.current = false;
       lastRepTimeRef.current = now;
       setRepCount((prev) => prev + 1);
+      playBeep(); // Reproducir sonido al contar una repetición
     }
   }
 
@@ -209,7 +234,7 @@ export default function Biceps() {
     A: any,
     B: any,
     C: any,
-    color: string
+    color: string,
   ) {
     ctx.beginPath();
     ctx.moveTo(A.x, A.y);

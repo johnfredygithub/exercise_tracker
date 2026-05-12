@@ -27,6 +27,30 @@ export default function Page() {
 
   const { handleSave } = useExerciseTracker();
 
+  // Función para reproducir un sonido de beep
+  const playBeep = () => {
+    const audioContext = new (
+      window.AudioContext || (window as any).webkitAudioContext
+    )();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime); // Frecuencia del beep
+    oscillator.type = "sine";
+
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(
+      0.01,
+      audioContext.currentTime + 0.3,
+    );
+
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.3);
+  };
+
   useEffect(() => {
     if (pushupCount > 0) {
       handleSave({
@@ -117,7 +141,7 @@ export default function Page() {
   function getAngle(
     A: { x: number; y: number },
     B: { x: number; y: number },
-    C: { x: number; y: number }
+    C: { x: number; y: number },
   ): number {
     const AB = { x: B.x - A.x, y: B.y - A.y };
     const CB = { x: B.x - C.x, y: B.y - C.y };
@@ -170,6 +194,7 @@ export default function Page() {
     if (elbowAngle > 150 && isPushDownRef.current) {
       isPushDownRef.current = false; // Está subiendo
       setPushupCount((prev) => prev + 1); // Cuenta la flexión
+      playBeep(); // Reproducir sonido al contar una repetición
       color = "green";
       console.log("✅ Flexión detectada");
     }

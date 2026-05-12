@@ -35,7 +35,8 @@
     "**/*.tsx",
     "next-env.d.ts",
     ".next/types/**/*.ts",
-    "nextauth.d.ts"
+    "nextauth.d.ts",
+    "custom-elements.d.ts"
   ],
   "exclude": [
     "node_modules"

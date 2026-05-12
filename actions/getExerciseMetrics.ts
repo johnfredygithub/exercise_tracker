@@ -21,11 +21,35 @@ async function getUserId() {
   return session.user.id;
 }
 ////////////////METRICAS
-export async function getExerciseMetrics() {
+export async function getExerciseMetrics({
+  startDate,
+  endDate,
+}: {
+  startDate?: string;
+  endDate?: string;
+} = {}) {
   try {
     const userId = await getUserId();
+
+    const dateFilter: { gte?: Date; lte?: Date } = {};
+    if (startDate) {
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+      dateFilter.gte = start;
+    }
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      dateFilter.lte = end;
+    }
+
+    const whereClause =
+      dateFilter.gte || dateFilter.lte
+        ? { userId, date: dateFilter }
+        : { userId };
+
     const data = await prisma.exerciseTracking.findMany({
-      where: { userId },
+      where: whereClause,
       orderBy: { date: "desc" },
       select: {
         id: true,
@@ -38,23 +62,35 @@ export async function getExerciseMetrics() {
 
     // Agrupar por fecha
     const grouped = Object.values(
-      data.reduce((acc, curr) => {
-        const day = format(curr.date, "yyyy-MM-dd");
-        if (!acc[day]) {
-          acc[day] = {
-            date: day,
-            count: 0,
-            exercises: [],
-            notes: curr.notes || "",
-            id: curr.id,
-          };
-        }
-        acc[day].count += curr.repetitions;
-        acc[day].exercises.push(
-          `${curr.exerciseName} (${curr.repetitions} reps)`
-        );
-        return acc;
-      }, {} as Record<string, { date: string; count: number; exercises: string[]; notes: string; id: string }>)
+      data.reduce(
+        (acc, curr) => {
+          const day = format(curr.date, "yyyy-MM-dd");
+          if (!acc[day]) {
+            acc[day] = {
+              date: day,
+              count: 0,
+              exercises: [],
+              notes: curr.notes || "",
+              id: curr.id,
+            };
+          }
+          acc[day].count += curr.repetitions;
+          acc[day].exercises.push(
+            `${curr.exerciseName} (${curr.repetitions} reps)`,
+          );
+          return acc;
+        },
+        {} as Record<
+          string,
+          {
+            date: string;
+            count: number;
+            exercises: string[];
+            notes: string;
+            id: string;
+          }
+        >,
+      ),
     );
 
     return grouped;
@@ -119,11 +155,11 @@ export async function getTotalsMetrics() {
     dailyTotal: daily.reduce((acc, ex) => acc + (ex._sum.repetitions || 0), 0),
     weeklyTotal: weekly.reduce(
       (acc, ex) => acc + (ex._sum.repetitions || 0),
-      0
+      0,
     ),
     monthlyTotal: monthly.reduce(
       (acc, ex) => acc + (ex._sum.repetitions || 0),
-      0
+      0,
     ),
     mostRepeatedToday: daily[0] || null,
     mostRepeatedWeek: weekly[0] || null,
@@ -148,7 +184,7 @@ export async function getActiveDaysMetrics() {
   });
 
   const activeDays = Array.from(
-    new Set(activeDaysRaw.map((d) => d.date.toISOString().split("T")[0]))
+    new Set(activeDaysRaw.map((d) => d.date.toISOString().split("T")[0])),
   );
 
   return {

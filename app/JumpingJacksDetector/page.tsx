@@ -21,6 +21,30 @@ export default function JumpingJackDetector() {
 
   const { handleSave } = useExerciseTracker();
 
+  // Función para reproducir un sonido de beep
+  const playBeep = () => {
+    const audioContext = new (
+      window.AudioContext || (window as any).webkitAudioContext
+    )();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime); // Frecuencia del beep
+    oscillator.type = "sine";
+
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(
+      0.01,
+      audioContext.currentTime + 0.3,
+    );
+
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.3);
+  };
+
   useEffect(() => {
     if (jumpCount > 0) {
       handleSave({
@@ -112,7 +136,7 @@ export default function JumpingJackDetector() {
 
     // 🔹 Obtiene puntos clave del brazo derecho
     const rightShoulder = pose.keypoints.find(
-      (k) => k.name === "right_shoulder"
+      (k) => k.name === "right_shoulder",
     );
     const rightElbow = pose.keypoints.find((k) => k.name === "right_elbow");
     const rightWrist = pose.keypoints.find((k) => k.name === "right_wrist");
@@ -178,7 +202,7 @@ export default function JumpingJackDetector() {
       console.log(`Manos arriba: ${handsUp}`);
       // 📌 Estado "abierto": manos arriba y pies separados
       console.log(
-        `Estado actual: ${isOpenRef.current ? "abierto" : "cerrado"}`
+        `Estado actual: ${isOpenRef.current ? "abierto" : "cerrado"}`,
       );
       if (handsUp && feetDistance > 116 && !isOpenRef.current) {
         console.log("Manos arriba y pies separados, estado abierto");
@@ -193,6 +217,7 @@ export default function JumpingJackDetector() {
 
         // ✅ Contador de Jumping Jacks
         setJumpCount((prev) => prev + 1);
+        playBeep(); // Reproducir sonido al contar una repetición
         console.log("🕺 Jumping Jack detectado");
       }
     }

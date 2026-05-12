@@ -18,6 +18,30 @@ export default function PoseDetectorComponent() {
   const [angle, setAngle] = useState(0);
   const isDownRef = useRef(false);
 
+  // Función para reproducir un sonido de beep
+  const playBeep = () => {
+    const audioContext = new (
+      window.AudioContext || (window as any).webkitAudioContext
+    )();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime); // Frecuencia del beep
+    oscillator.type = "sine";
+
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(
+      0.01,
+      audioContext.currentTime + 0.3,
+    );
+
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.3);
+  };
+
   useEffect(() => {
     let stream: MediaStream;
     let stop = false;
@@ -91,7 +115,7 @@ export default function PoseDetectorComponent() {
   function getAngle(
     A: { x: number; y: number },
     B: { x: number; y: number },
-    C: { x: number; y: number }
+    C: { x: number; y: number },
   ): number {
     const AB = { x: B.x - A.x, y: B.y - A.y };
     const CB = { x: B.x - C.x, y: B.y - C.y };
@@ -171,6 +195,7 @@ export default function PoseDetectorComponent() {
     if (avgAngle > 160 && isDownRef.current) {
       isDownRef.current = false;
       setSquatCount((prev) => prev + 1);
+      playBeep(); // Reproducir sonido al contar una repetición
       console.log("✅ Sentadilla detectada");
     }
   }
@@ -218,6 +243,7 @@ export default function PoseDetectorComponent() {
     if (angle > 150 && isPushDownRef.current) {
       isPushDownRef.current = false;
       setPushupCount((prev) => prev + 1);
+      playBeep(); // Reproducir sonido al contar una repetición
       color = "green"; // subiendo y contando
       console.log("✅ Flexión detectada");
     }
@@ -242,7 +268,7 @@ export default function PoseDetectorComponent() {
 
   function detectJumpingJack(pose: Pose, ctx?: CanvasRenderingContext2D) {
     const keypoints = Object.fromEntries(
-      pose.keypoints.map((k) => [k.name, k])
+      pose.keypoints.map((k) => [k.name, k]),
     );
 
     const required = [
@@ -272,7 +298,7 @@ export default function PoseDetectorComponent() {
 
     const ankleDistance = Math.abs(leftAnkleX - rightAnkleX);
     const hipWidth = Math.abs(
-      keypoints["left_hip"].x - keypoints["right_hip"].x
+      keypoints["left_hip"].x - keypoints["right_hip"].x,
     );
 
     // Más tolerancia en las condiciones
@@ -320,6 +346,7 @@ export default function PoseDetectorComponent() {
     if (framesClosedRef.current >= minFrames && isJumpingJackRef.current) {
       isJumpingJackRef.current = false;
       setJumpCount((prev) => prev + 1);
+      playBeep(); // Reproducir sonido al contar una repetición
       console.log("✅ Jumping Jack detectado");
     }
   }
@@ -337,7 +364,7 @@ export default function PoseDetectorComponent() {
 
   function detectVerticalJump(pose: Pose) {
     const keypoints = Object.fromEntries(
-      pose.keypoints.map((k) => [k.name, k])
+      pose.keypoints.map((k) => [k.name, k]),
     );
 
     const leftAnkle = keypoints["left_ankle"];
@@ -381,6 +408,7 @@ export default function PoseDetectorComponent() {
       if (framesOnGroundRef.current >= minFramesJumps && isJumpingRef.current) {
         isJumpingRef.current = false;
         setOnlyJumpCount((prev) => prev + 1);
+        playBeep(); // Reproducir sonido al contar una repetición
         console.log("✅ Salto detectado");
       }
     }
@@ -418,7 +446,7 @@ export default function PoseDetectorComponent() {
         }
       } catch (err: any) {
         setError(
-          "No se pudo acceder a la cámara. Asegúrate de haber dado permiso."
+          "No se pudo acceder a la cámara. Asegúrate de haber dado permiso.",
         );
         console.error("Error accediendo a la cámara:", err);
       }
